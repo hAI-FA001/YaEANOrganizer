@@ -1,0 +1,7 @@
+__pycache__/
+pyxenoverse/
+build/
+dist/
+*.spec
+*.png
+config/
