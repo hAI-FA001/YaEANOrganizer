@@ -216,15 +216,22 @@ class MainWindow(wx.Frame):
             build_bone_tree(obj['ean_bone_list'], obj['ean'].skeleton)
             
             # MY MODIF
-            if new_ean.skeleton.m_have_128_unknown_bytes:
+            do_build_unk1 = new_ean.skeleton.m_have_128_unknown_bytes
+            if not do_build_unk1:
+                obj['unk1_panel_ean'].scrolled_panel.Disable()
+                with wx.MessageDialog(self,
+                                      (f"Unk1 Offset ({new_ean.skeleton.unknown_offset_0}) is Zero"
+                                      if not new_ean.skeleton.unknown_offset_0 else
+                                      f"File can't hold Unk1 (File size is {new_ean.skeleton.fsize}, but Unk1 ends at {new_ean.skeleton.base_skeleton_address + new_ean.skeleton.unknown_offset_0 + 4*31})")
+                                      + "\nDo you want to add Unk1?",
+                                "Add Unk1", wx.YES | wx.NO) as dlg:
+                    if dlg.ShowModal() == wx.ID_YES:
+                        new_ean.skeleton.unk1_list = [0] * len(I_BYTE_ORDER)
+                        do_build_unk1 = True
+                        new_ean.skeleton.m_have_128_unknown_bytes = True
+            if do_build_unk1:
                 obj['unk1_panel_ean'].scrolled_panel.Enable()
                 build_unk1_list(obj['unk1_list_ean'], obj['ean'].skeleton)
-            else:
-                obj['unk1_panel_ean'].scrolled_panel.Disable()
-                from wx import MessageDialog, OK
-                with MessageDialog(self, f"Unk1 Offset ({new_ean.skeleton.unknown_offset_0}) is Zero" if not new_ean.skeleton.unknown_offset_0 else f"File can't hold Unk1 (File size is {new_ean.skeleton.fsize}, but Unk1 ends at {new_ean.skeleton.base_skeleton_address + new_ean.skeleton.unknown_offset_0 + 4*31})",
-                                "About Unk1", OK) as dlg:
-                    dlg.ShowModal() # Shows it
 
             # MY MODIF
             obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
@@ -252,15 +259,22 @@ class MainWindow(wx.Frame):
             build_bone_tree(obj['esk_bone_list'], obj['esk'])
             
             # MY MODIF
-            if new_esk.m_have_128_unknown_bytes:
+            do_build_unk1 = new_esk.m_have_128_unknown_bytes
+            if not do_build_unk1:
+                obj['unk1_panel_esk'].scrolled_panel.Disable()
+                with wx.MessageDialog(self,
+                                      (f"Unk1 Offset ({new_esk.unknown_offset_0}) is Zero"
+                                      if not new_esk.unknown_offset_0 else
+                                      f"File can't hold Unk1 (File size is {new_esk.fsize}, but Unk1 ends at {new_esk.base_skeleton_address + new_esk.unknown_offset_0 + 4*31})")
+                                      + "\nDo you want to add Unk1?",
+                                "Add Unk1", wx.YES | wx.NO) as dlg:
+                    if dlg.ShowModal() == wx.ID_YES:
+                        new_esk.unk1_list = [0] * len(I_BYTE_ORDER)
+                        do_build_unk1 = True
+                        new_esk.m_have_128_unknown_bytes = True
+            if do_build_unk1:
                 obj['unk1_panel_esk'].scrolled_panel.Enable()
                 build_unk1_list(obj['unk1_list_esk'], obj['esk'])
-            else:
-                obj['unk1_panel_esk'].scrolled_panel.Disable()
-                from wx import MessageDialog, OK
-                with MessageDialog(self, f"Unk1 Offset ({new_esk.unknown_offset_0}) is Zero" if not new_esk.unknown_offset_0 else f"File can't hold Unk1 (File size is {new_esk.fsize}, but Unk1 ends at {new_esk.base_skeleton_address + new_esk.unknown_offset_0 + 4*31})",
-                                "About Unk1", OK) as dlg:
-                    dlg.ShowModal() # Shows it
 
             # MY MODIF
             obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
