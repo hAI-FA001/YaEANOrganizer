@@ -492,19 +492,19 @@ class AnimMainPanel(wx.Panel):
                 if bone_name_parts[1] == 'R':
                     bone_name_parts[1] = 'L'
                     node.bone_name = '_'.join(bone_name_parts)
-                    continue
                 elif bone_name_parts[1] == 'L':
                     bone_name_parts[1] = 'R'
                     node.bone_name = '_'.join(bone_name_parts)
-                    continue
                 if node.bone_index == -1:
                     with wx.MessageDialog(self, "Cannot mirror. Couldn't find matching L/R bones", "Error") as dlg:
                         dlg.ShowModal()
                     return
+
+        # Then we can go and do the math
+        for animation in animations:
+            for node in animation.nodes:
                 if exclude_base and node.bone_name == 'b_C_Base':
                     continue
-                # MY MODIF
-                # I moved this up so the L/R bones won't be flipped again cuz we already swapped L/R
                 for keyframed_animation in node.keyframed_animations:
                     if keyframed_animation.flag == POSITION_FLAG:
                         for keyframe in keyframed_animation.keyframes:
@@ -513,21 +513,6 @@ class AnimMainPanel(wx.Panel):
                         for keyframe in keyframed_animation.keyframes:
                             keyframe.y *= -1.0
                             keyframe.z *= -1.0
-
-
-        # Then we can go and do the math
-        # for animation in animations:
-        #     for node in animation.nodes:
-        #         if exclude_base and node.bone_name == 'b_C_Base':
-        #             continue
-        #         for keyframed_animation in node.keyframed_animations:
-        #             if keyframed_animation.flag == POSITION_FLAG:
-        #                 for keyframe in keyframed_animation.keyframes:
-        #                     keyframe.x *= -1.0
-        #             elif keyframed_animation.flag == ORIENTATION_FLAG:
-        #                 for keyframe in keyframed_animation.keyframes:
-        #                     keyframe.y *= -1.0
-        #                     keyframe.z *= -1.0
 
         self.root.SetStatusText(f"Mirrored {animations_changed} animations")
 
