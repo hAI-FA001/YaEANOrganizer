@@ -56,7 +56,7 @@ class MainWindow(wx.Frame):
         pub.subscribe(self.save_esk, 'save_esk')
         pub.subscribe(self.copy_bone_info, 'copy_bone_info')
 
-        pub.subscribe(self.update_unk2, "update_unk2")
+        pub.subscribe(self.update_unk2, "update_unk2")  # MY MODIF
 
         # Events
         self.Bind(wx.EVT_MENU, self.on_exit, menu_exit)
@@ -73,20 +73,20 @@ class MainWindow(wx.Frame):
 
         self.anim_main_panel = AnimMainPanel(self.ean_main_notebook, self)
         self.bone_main_panel = BoneMainPanel(self.ean_main_notebook, self, "EAN")
-        self.unk1_panel_ean = Unk1MainPanel(self.ean_main_notebook, self)
-        self.unk2_panel_ean = Unk2MainPanel(self.ean_main_notebook, self)
+        self.unk1_panel_ean = Unk1MainPanel(self.ean_main_notebook, self)  # MY MODIF
+        self.unk2_panel_ean = Unk2MainPanel(self.ean_main_notebook, self)  # MY MODIF
         self.ean_main_notebook.AddPage(self.anim_main_panel, "Animation List")
         self.ean_main_notebook.AddPage(self.bone_main_panel, "Bone List")
-        self.ean_main_notebook.AddPage(self.unk1_panel_ean, "Unk1 Section")
-        self.ean_main_notebook.AddPage(self.unk2_panel_ean, "Unk2 Section")
+        self.ean_main_notebook.AddPage(self.unk1_panel_ean, "Unk1 Section")  # MY MODIF
+        self.ean_main_notebook.AddPage(self.unk2_panel_ean, "Unk2 Section")  # MY MODIF
 
 
         self.esk_main_panel = BoneMainPanel(self.esk_main_notebook, self, "ESK")
-        self.unk1_panel_esk = Unk1MainPanel(self.esk_main_notebook, self, is_save_ean=False)
-        self.unk2_panel_esk = Unk2MainPanel(self.esk_main_notebook, self, is_save_ean=False)
+        self.unk1_panel_esk = Unk1MainPanel(self.esk_main_notebook, self, is_save_ean=False)  # MY MODIF
+        self.unk2_panel_esk = Unk2MainPanel(self.esk_main_notebook, self, is_save_ean=False)  # MY MODIF
         self.esk_main_notebook.AddPage(self.esk_main_panel, "Bone List")
-        self.esk_main_notebook.AddPage(self.unk1_panel_esk, "Unk1 Section")
-        self.esk_main_notebook.AddPage(self.unk2_panel_esk, "Unk2 Section")
+        self.esk_main_notebook.AddPage(self.unk1_panel_esk, "Unk1 Section")  # MY MODIF
+        self.esk_main_notebook.AddPage(self.unk2_panel_esk, "Unk2 Section")  # MY MODIF
 
 
         # Other view
@@ -100,20 +100,21 @@ class MainWindow(wx.Frame):
 
         self.anim_side_panel = AnimSidePanel(self.ean_side_notebook, self)
         self.bone_side_panel = BoneSidePanel(self.ean_side_notebook, self, "EAN")
-        self.unk1_panel_side_ean = Unk1MainPanel(self.ean_side_notebook, self, is_main_panel=False)
-        self.unk2_panel_side_ean = Unk2MainPanel(self.ean_side_notebook, self, is_main_panel=False)
+        self.unk1_panel_side_ean = Unk1MainPanel(self.ean_side_notebook, self, is_main_panel=False)  # MY MODIF
+        self.unk2_panel_side_ean = Unk2MainPanel(self.ean_side_notebook, self, is_main_panel=False)  # MY MODIF
         self.ean_side_notebook.AddPage(self.anim_side_panel, "Animation List")
         self.ean_side_notebook.AddPage(self.bone_side_panel, "Bone List")
-        self.ean_side_notebook.AddPage(self.unk1_panel_side_ean, "Unk1 Section")
-        self.ean_side_notebook.AddPage(self.unk2_panel_side_ean, "Unk2 Section")
+        self.ean_side_notebook.AddPage(self.unk1_panel_side_ean, "Unk1 Section")  # MY MODIF
+        self.ean_side_notebook.AddPage(self.unk2_panel_side_ean, "Unk2 Section")  # MY MODIF
 
         self.esk_side_panel = BoneSidePanel(self.esk_side_notebook, self, "ESK")
-        self.unk1_panel_side_esk = Unk1MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)
-        self.unk2_panel_side_esk = Unk2MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)
+        self.unk1_panel_side_esk = Unk1MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)  # MY MODIF
+        self.unk2_panel_side_esk = Unk2MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)  # MY MODIF
         self.esk_side_notebook.AddPage(self.esk_side_panel, "Bone List")
-        self.esk_side_notebook.AddPage(self.unk1_panel_side_esk, "Unk1 Section")
-        self.esk_side_notebook.AddPage(self.unk2_panel_side_esk, "Unk2 Section")
+        self.esk_side_notebook.AddPage(self.unk1_panel_side_esk, "Unk1 Section")  # MY MODIF
+        self.esk_side_notebook.AddPage(self.unk2_panel_side_esk, "Unk2 Section")  # MY MODIF
 
+        # MY MODIF
         self.toggle_dark_mode_button = wx.ToggleButton(self, label='Toggle Dark')
         self.toggle_dark_mode_button.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_dark)
 
@@ -124,11 +125,11 @@ class MainWindow(wx.Frame):
         hsizer.Add(self.side_notebook, 1, wx.ALL|wx.EXPAND)
         
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.toggle_dark_mode_button, 0, wx.EXPAND)
+        self.sizer.Add(self.toggle_dark_mode_button, 0, wx.EXPAND)  # MY MODIF
         self.sizer.Add(hsizer, 1, wx.ALL | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.SetAutoLayout(1)
-        self.SetBackgroundColour("White")
+        self.SetBackgroundColour("White")  # MY MODIF
 
         # Lists
         self.main = {
@@ -140,6 +141,7 @@ class MainWindow(wx.Frame):
             'ean_bone_panel': self.bone_main_panel,
             'esk_bone_panel': self.esk_main_panel,
             
+            # MY MODIF
             'unk1_panel_ean': self.unk1_panel_ean,
             'unk1_panel_esk': self.unk1_panel_esk,
             'unk2_panel_ean': self.unk2_panel_ean,
@@ -149,6 +151,7 @@ class MainWindow(wx.Frame):
             'ean_bone_list': self.bone_main_panel.bone_list,
             'esk_bone_list': self.esk_main_panel.bone_list,
             
+            # MY MODIF
             'unk1_list_ean': self.unk1_panel_ean.I_ctrls,
             'unk1_list_esk': self.unk1_panel_esk.I_ctrls,
         }
@@ -162,6 +165,7 @@ class MainWindow(wx.Frame):
             'ean_bone_panel': self.bone_side_panel,
             'esk_bone_panel': self.esk_side_panel,
             
+            # MY MODIF
             'unk1_panel_ean': self.unk1_panel_side_ean,
             'unk1_panel_esk': self.unk1_panel_side_esk,
             'unk2_panel_ean': self.unk2_panel_side_ean,
@@ -171,6 +175,7 @@ class MainWindow(wx.Frame):
             'ean_bone_list': self.bone_side_panel.bone_list,
             'esk_bone_list': self.esk_side_panel.bone_list,
             
+            # MY MODIF
             'unk1_list_ean': self.unk1_panel_side_ean.I_ctrls,
             'unk1_list_esk': self.unk1_panel_side_esk.I_ctrls
         }
@@ -210,6 +215,7 @@ class MainWindow(wx.Frame):
             build_anim_list(obj['anim_list'], obj['ean'])
             build_bone_tree(obj['ean_bone_list'], obj['ean'].skeleton)
             
+            # MY MODIF
             if new_ean.skeleton.m_have_128_unknown_bytes:
                 obj['unk1_panel_ean'].scrolled_panel.Enable()
                 build_unk1_list(obj['unk1_list_ean'], obj['ean'].skeleton)
@@ -220,10 +226,12 @@ class MainWindow(wx.Frame):
                                 "About Unk1", OK) as dlg:
                     dlg.ShowModal() # Shows it
 
+            # MY MODIF
             obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
             obj['unk2_list_ean'] = obj['unk2_panel_ean'].I_ctrls
             build_unk2_list(obj['unk2_list_ean'], obj['ean'].skeleton)
 
+            # MY MODIF
             obj['unk1_panel_ean'].name.SetLabel(filename)
             obj['unk1_panel_ean'].Layout()
             obj['unk2_panel_ean'].name.SetLabel(filename)
@@ -243,6 +251,7 @@ class MainWindow(wx.Frame):
             obj['esk'] = new_esk
             build_bone_tree(obj['esk_bone_list'], obj['esk'])
             
+            # MY MODIF
             if new_esk.m_have_128_unknown_bytes:
                 obj['unk1_panel_esk'].scrolled_panel.Enable()
                 build_unk1_list(obj['unk1_list_esk'], obj['esk'])
@@ -253,11 +262,12 @@ class MainWindow(wx.Frame):
                                 "About Unk1", OK) as dlg:
                     dlg.ShowModal() # Shows it
 
-            
+            # MY MODIF
             obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
             obj['unk2_list_esk'] = obj['unk2_panel_esk'].I_ctrls
             build_unk2_list(obj['unk2_list_esk'], obj['esk'])
 
+            # MY MODIF
             obj['unk1_panel_esk'].name.SetLabel(filename)
             obj['unk1_panel_esk'].Layout()
             obj['unk2_panel_esk'].name.SetLabel(filename)
@@ -303,6 +313,7 @@ class MainWindow(wx.Frame):
             return
 
         
+        # MY MODIF
         # update Unk values here
         unk1_ctrl_list_loaded = obj[f'unk1_list_{filetype.lower()}']
         esk_to_edit = obj['ean'].skeleton if filetype.lower() == 'ean' else obj['esk']
@@ -348,6 +359,7 @@ class MainWindow(wx.Frame):
     def copy_bone_info(self, filename, bone):
         self.copied_bone_info = filename, bone
 
+    # MY MODIF
     def on_toggle_dark(self, event):
         darkmode.darkMode(self, "White")
         # prev_label = self.toggle_dark_mode_button.GetLabel()
@@ -355,6 +367,7 @@ class MainWindow(wx.Frame):
         # self.toggle_dark_mode_button.SetLabel(f"Toggle {next_mode}")
         pub.sendMessage('toggle_dark_mode', e="light" if self.GetBackgroundColour() == "White" else "dark")
     
+    # MY MODIF
     def update_unk2(self, unk2_added_idxs, filetype):
         if filetype == "EAN":
             self.main['unk2_panel_ean'].update_unk2(unk2_added_idxs)

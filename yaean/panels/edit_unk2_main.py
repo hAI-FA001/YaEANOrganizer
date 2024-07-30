@@ -1,3 +1,5 @@
+# MY MODIF
+
 from pubsub import pub
 import wx
 from wx.lib.scrolledpanel import ScrolledPanel

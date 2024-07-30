@@ -47,6 +47,7 @@ def build_bone_tree(bone_list_ctrl, esk):
         item = bone_list_ctrl.GetNextItem(item)
     bone_list_ctrl.CheckItemRecursively(bone_list_ctrl.GetRootItem(), wx.CHK_CHECKED)
 
+# MY MODIF
 def build_unk1_list(unk_list, esk):
     from pyxenoverse.esk import I_IDX_TO_NAME, I_BYTE_ORDER, THESE_POINT_TO_BONES
     for idx in range(len(unk_list)):
@@ -64,6 +65,7 @@ def build_unk1_list(unk_list, esk):
         else:
             unk_list[idx].SetValue(str(esk.unk1_list[idx]))
 
+# MY MODIF
 def build_unk2_list(unk_list, esk):
     for idx in range(len(unk_list)):
         unk_list[idx].SetValue(str(esk.unk2_list[idx]))
@@ -178,6 +180,7 @@ def quaternion_to_euler(q):
 
         return x, y, z
 
+# MY MODIF
 def convert_to_px(dip, width=True):
         dc = wx.ScreenDC()
         return int(dip * (dc.GetPPI().width if width else dc.GetPPI().height) / 96.0)

@@ -24,6 +24,7 @@ class BoneSidePanel(wx.Panel):
         self.copy = wx.Button(self, wx.ID_COPY, "Copy")
         self.info = wx.Button(self, wx.ID_INFO, "Info")
 
+        # MY MODIF
         self.skeletonIdTxt = wx.StaticText(self, -1, 'Skeleton Id')
         self.skeletonIdCtrl = wx.TextCtrl(self, wx.ID_OK, '(Not loaded)', size=(convert_to_px(175, width=True), convert_to_px(25, width=False)))
         self.skeletonIdCtrl.Disable()
@@ -64,6 +65,8 @@ class BoneSidePanel(wx.Panel):
         self.button_sizer.Add(self.info)
         self.button_sizer.AddSpacer(10)
         self.button_sizer.Add(self.check_box)
+
+        # MY MODIF
         self.button_sizer.AddSpacer(50)
         self.button_sizer.Add(self.skeletonIdTxt, 0, wx.ALIGN_CENTER)
         self.button_sizer.AddSpacer(5)

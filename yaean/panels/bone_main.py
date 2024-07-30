@@ -38,6 +38,7 @@ class BoneMainPanel(wx.Panel):
         self.info.SetToolTip(wx.ToolTip("Get current pyxenoverse info"))
         self.info.Disable()
 
+        # MY MODIF
         self.skeletonIdTxt = wx.StaticText(self, -1, 'Skeleton Id')
         self.skeletonIdCtrl = wx.TextCtrl(self, wx.ID_OK, '(Not loaded)', size=(convert_to_px(175, width=True), convert_to_px(25, width=False)))
         self.skeletonIdCtrl.Disable()
@@ -81,6 +82,8 @@ class BoneMainPanel(wx.Panel):
         self.button_sizer.Add(self.edit)
         self.button_sizer.AddSpacer(5)
         self.button_sizer.Add(self.info)
+        
+        # MY MODIF
         self.button_sizer.AddSpacer(50)
         self.button_sizer.Add(self.skeletonIdTxt, 0, wx.ALIGN_CENTER)
         self.button_sizer.AddSpacer(5)
@@ -345,8 +348,8 @@ class BoneMainPanel(wx.Panel):
                 if dlg.ShowModal() != wx.ID_YES:
                     return
 
-        unk2_added_idxs = []
-        changed_unk2 = False
+        unk2_added_idxs = []  # MY MODIF
+        changed_unk2 = False  # MY MODIF
         for bone in copied_bones:
             new_bone = Bone()
             new_bone.paste(bone)
@@ -360,6 +363,7 @@ class BoneMainPanel(wx.Panel):
                 else:
                     item = self.bone_list.AppendItem(root, '', data=new_bone)
 
+                # MY MODIF
                 # unk2 needs to match
                 unk2_default_vals = [0, 65535]
                 where_to_add = new_bone.index
@@ -375,11 +379,13 @@ class BoneMainPanel(wx.Panel):
                 changed_unk2 = True
                 unk2_added_idxs += [where_to_add]
 
+
             self.bone_list.Select(item)
             self.bone_list.Expand(item)
             self.bone_list.CheckItem(item)
             temp_bone_list[new_bone.index] = item
 
+        # MY MODIF
         if changed_unk2:
             pub.sendMessage("update_unk2", unk2_added_idxs=unk2_added_idxs, filetype=self.filetype)
 

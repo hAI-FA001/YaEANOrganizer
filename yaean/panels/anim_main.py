@@ -503,7 +503,8 @@ class AnimMainPanel(wx.Panel):
                     return
                 if exclude_base and node.bone_name == 'b_C_Base':
                     continue
-                # I moved this up so the L/R bones won't be flipped again / we already swapped L/R
+                # MY MODIF
+                # I moved this up so the L/R bones won't be flipped again cuz we already swapped L/R
                 for keyframed_animation in node.keyframed_animations:
                     if keyframed_animation.flag == POSITION_FLAG:
                         for keyframe in keyframed_animation.keyframes:
