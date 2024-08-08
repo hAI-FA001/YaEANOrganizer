@@ -168,10 +168,11 @@ class BoneMainPanel(wx.Panel):
         
         bones_removed = [b.index for b in prev_bones if b.index not in prev_indices]
         bones_added = [b.index for b in updated_bones if b.name not in prev_names]
-        
-        if bones_added:
+
+        # pray u can only either add bone or remove bone at one time
+        if len(bones_added) > 0:
             pub.sendMessage("add_unk2", unk2_added_idxs=bones_added, filetype=self.filetype)
-        if bones_removed:
+        elif len(bones_removed) > 0:
             pub.sendMessage("delete_unk2", unk2_deleted_idxs=bones_removed, filetype=self.filetype)
 
 

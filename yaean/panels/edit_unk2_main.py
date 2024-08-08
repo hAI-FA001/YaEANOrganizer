@@ -60,13 +60,14 @@ class Unk2MainPanel(wx.Panel):
         self.scrolled_panel.Disable()
 
 
-    def make_uint_ctrl(self, parent, ctrl_sz, byte_order):
+    def make_uint_ctrl(self, parent, ctrl_sz, byte_order, idx):
         def on_change(evt):
             txt = ctrl.GetValue()
             try:
                 value = int(txt) if byte_order.lower() == 'i' else float(txt)
                 value = min(value, 2**32)
                 value = max(value, -2**32)
+                self.I_values[idx] = value
             except ValueError:
                 pass
 
@@ -100,7 +101,7 @@ class Unk2MainPanel(wx.Panel):
             label = f'I_{number:3}'
             
             static_text = wx.StaticText(self.scrolled_panel, label=label)
-            ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, 'I')
+            ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, 'I', idx)
 
             ctrl.SetValue(str(self.I_values[idx]))
 
@@ -139,8 +140,9 @@ class Unk2MainPanel(wx.Panel):
         
         self.I_values = [ctrl.GetValue() for ctrl in self.I_ctrls]
         for where_to_add in sorted(unk2_added_idxs):
+            where_to_add *= 2
             self.I_values = self.I_values[:where_to_add] + unk2_default_vals + self.I_values[where_to_add:]
-
+        
         self.update_unk2()
     
     def delete_unk2(self, unk2_deleted_idxs):
@@ -153,6 +155,6 @@ class Unk2MainPanel(wx.Panel):
             cur_idx += 1
 
         self.I_values = new_I_values
-
+        
         self.update_unk2()
 

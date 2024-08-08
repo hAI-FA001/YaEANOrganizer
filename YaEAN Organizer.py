@@ -330,21 +330,15 @@ class MainWindow(wx.Frame):
         
         # MY MODIF
         # update Unk values here
-        unk1_ctrl_list_loaded = obj[f'unk1_list_{filetype.lower()}']
         esk_to_edit = obj['ean'].skeleton if filetype.lower() == 'ean' else obj['esk']
         if esk_to_edit.m_have_128_unknown_bytes:
-            for idx, byte_order in enumerate(I_BYTE_ORDER):
-                if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES:
-                    value = unk1_ctrl_list_loaded[idx].GetSelection()
-                else:
-                    value = unk1_ctrl_list_loaded[idx].GetValue()
-                esk_to_edit.unk1_list[idx] = float(value) if byte_order.lower() == 'f' else int(value)
-        
-        unk2_ctrl_list_loaded = obj[f'unk2_list_{filetype.lower()}']
-        for idx, ctrl in enumerate(unk2_ctrl_list_loaded):
-            val = ctrl.GetValue()
-            esk_to_edit.unk2_list[idx] = int(val)
+            unk1_vals = [ctrl.GetSelection() if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES else ctrl.GetValue()
+                         for idx, ctrl in enumerate(obj[f'unk1_list_{filetype.lower()}'])]
+            unk1_vals = [float(val) if I_BYTE_ORDER[idx].lower() == 'f' else int(val)
+                         for idx, val in enumerate(unk1_vals)]
+            esk_to_edit.unk1_list = unk1_vals
             
+        esk_to_edit.unk2_list = [int(ctrl.GetValue()) for ctrl in obj[f'unk2_list_{filetype.lower()}']]    
         esk_to_edit.skeletonId = int(obj[f'{filetype.lower()}_bone_panel'].skeletonIdCtrl.GetValue())
 
         
@@ -384,12 +378,8 @@ class MainWindow(wx.Frame):
     
     # MY MODIF
     def add_unk2(self, unk2_added_idxs, filetype):
-        if filetype == "EAN":
-            unk2_panel = 'unk2_panel_ean'
-            unk2_list = 'unk2_list_ean'
-        else:
-            unk2_panel = 'unk2_panel_esk'
-            unk2_list = 'unk2_list_esk'
+        unk2_panel = f'unk2_panel_{filetype.lower()}'
+        unk2_list = f'unk2_list_{filetype.lower()}'
         
         self.main[unk2_panel].add_unk2(unk2_added_idxs)
         self.main[unk2_list] = self.main[unk2_panel].I_ctrls
@@ -398,12 +388,8 @@ class MainWindow(wx.Frame):
     
     # MY MODIF
     def delete_unk2(self, unk2_deleted_idxs, filetype):
-        if filetype == "EAN":
-            unk2_panel = 'unk2_panel_ean'
-            unk2_list = 'unk2_list_ean'
-        else:
-            unk2_panel = 'unk2_panel_esk'
-            unk2_list = 'unk2_list_esk'
+        unk2_panel = f'unk2_panel_{filetype.lower()}'
+        unk2_list = f'unk2_list_{filetype.lower()}'
         
         self.main[unk2_panel].delete_unk2(unk2_deleted_idxs)
         self.main[unk2_list] = self.main[unk2_panel].I_ctrls
