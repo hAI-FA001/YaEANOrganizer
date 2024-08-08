@@ -78,7 +78,7 @@ class MainWindow(wx.Frame):
         self.unk2_panel_ean = Unk2MainPanel(self.ean_main_notebook, self)  # MY MODIF
         self.ean_main_notebook.AddPage(self.anim_main_panel, "Animation List")
         self.ean_main_notebook.AddPage(self.bone_main_panel, "Bone List")
-        self.ean_main_notebook.AddPage(self.unk1_panel_ean, "Unk1 Section")  # MY MODIF
+        self.ean_main_notebook.AddPage(self.unk1_panel_ean, "Bone Control")  # MY MODIF
         self.ean_main_notebook.AddPage(self.unk2_panel_ean, "Unk2 Section")  # MY MODIF
 
 
@@ -86,7 +86,7 @@ class MainWindow(wx.Frame):
         self.unk1_panel_esk = Unk1MainPanel(self.esk_main_notebook, self, is_save_ean=False)  # MY MODIF
         self.unk2_panel_esk = Unk2MainPanel(self.esk_main_notebook, self, is_save_ean=False)  # MY MODIF
         self.esk_main_notebook.AddPage(self.esk_main_panel, "Bone List")
-        self.esk_main_notebook.AddPage(self.unk1_panel_esk, "Unk1 Section")  # MY MODIF
+        self.esk_main_notebook.AddPage(self.unk1_panel_esk, "Bone Control")  # MY MODIF
         self.esk_main_notebook.AddPage(self.unk2_panel_esk, "Unk2 Section")  # MY MODIF
 
 
@@ -105,14 +105,14 @@ class MainWindow(wx.Frame):
         self.unk2_panel_side_ean = Unk2MainPanel(self.ean_side_notebook, self, is_main_panel=False)  # MY MODIF
         self.ean_side_notebook.AddPage(self.anim_side_panel, "Animation List")
         self.ean_side_notebook.AddPage(self.bone_side_panel, "Bone List")
-        self.ean_side_notebook.AddPage(self.unk1_panel_side_ean, "Unk1 Section")  # MY MODIF
+        self.ean_side_notebook.AddPage(self.unk1_panel_side_ean, "Bone Control")  # MY MODIF
         self.ean_side_notebook.AddPage(self.unk2_panel_side_ean, "Unk2 Section")  # MY MODIF
 
         self.esk_side_panel = BoneSidePanel(self.esk_side_notebook, self, "ESK")
         self.unk1_panel_side_esk = Unk1MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)  # MY MODIF
         self.unk2_panel_side_esk = Unk2MainPanel(self.esk_side_notebook, self, is_save_ean=False, is_main_panel=False)  # MY MODIF
         self.esk_side_notebook.AddPage(self.esk_side_panel, "Bone List")
-        self.esk_side_notebook.AddPage(self.unk1_panel_side_esk, "Unk1 Section")  # MY MODIF
+        self.esk_side_notebook.AddPage(self.unk1_panel_side_esk, "Bone Control")  # MY MODIF
         self.esk_side_notebook.AddPage(self.unk2_panel_side_esk, "Unk2 Section")  # MY MODIF
 
         # MY MODIF

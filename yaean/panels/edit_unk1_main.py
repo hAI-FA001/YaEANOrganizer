@@ -12,7 +12,7 @@ from pyxenoverse.gui.ctrl.hex_ctrl import HexCtrl
 from pyxenoverse.gui import add_entry
 from yaean.helpers import convert_to_px
 
-from pyxenoverse.esk import I_BYTE_ORDER, I_IDX_TO_NAME, THESE_POINT_TO_BONES, FLAG_VALS
+from pyxenoverse.esk import I_BYTE_ORDER, I_IDX_TO_NAME, THESE_POINT_TO_BONES, FLAG_VALS, I_UNK_NAMES
 
 
 class Unk1MainPanel(wx.Panel):
@@ -42,9 +42,12 @@ class Unk1MainPanel(wx.Panel):
         self.I_ctrls = []
         gsizer = wx.FlexGridSizer(2, 10, 10)
         for idx in range(len(self.I_values)):
-            number = f'{I_IDX_TO_NAME[idx]:02}'
-            label = f'{I_BYTE_ORDER[idx].upper()}_{number:3}'
-            
+            label = I_UNK_NAMES[idx]
+
+            if label == "unk":
+                number = f'{I_IDX_TO_NAME[idx]:02}'
+                label = f'{I_BYTE_ORDER[idx].upper()}_{number:3}'
+
             static_text = wx.StaticText(self.scrolled_panel, label=label)
             
             if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES:
@@ -60,9 +63,13 @@ class Unk1MainPanel(wx.Panel):
                 ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, I_BYTE_ORDER[idx])
             
             self.I_ctrls.append(ctrl)
-            
-            gsizer.Add(static_text, 1, wx.ALIGN_CENTER)
+
+            gsizer.Add(static_text, 1, wx.ALIGN_LEFT)
             gsizer.Add(ctrl, 1, wx.ALIGN_CENTER)
+            
+            if (idx - 0) % 8 == 0:
+                gsizer.AddSpacer(10)
+                gsizer.AddSpacer(10)
         
         self.scrolled_panel.SetupScrolling()
         self.scrolled_panel.SetSizer(gsizer)
