@@ -221,6 +221,8 @@ class BoneMainPanel(wx.Panel):
 
         # Copy Bones
         names = []
+        unk2_added_idxs = []  # MY MODIF
+        changed_unk2 = False  # MY MODIF
         for bone in missing_bones:
             new_bone = Bone()
             new_bone.paste(bone)
@@ -230,6 +232,28 @@ class BoneMainPanel(wx.Panel):
 
             temp_bone_list[bone.index] = item
             names.append(bone.name)
+
+            # MY MODIF
+            # Unk1 must match
+            unk2_default_vals = [0, 65535]
+            where_to_add = new_bone.index
+            
+            if self.filetype == 'EAN':    
+                esk = self.root.main['ean'].skeleton
+            else:
+                esk = self.root.main['esk']
+
+            unk2_list = esk.unk2_list
+            unk2_list = unk2_list[:where_to_add] + unk2_default_vals + unk2_list[where_to_add:]
+            esk.unk2_list = unk2_list
+            changed_unk2 = True
+            unk2_added_idxs += [where_to_add]
+
+
+        # MY MODIF
+        if changed_unk2:
+            pub.sendMessage("add_unk2", unk2_added_idxs=unk2_added_idxs, filetype=self.filetype)
+
         self.recalculate_bone_tree()
         return names
 
@@ -309,12 +333,35 @@ class BoneMainPanel(wx.Panel):
         if not selected:
             return
         bone = self.bone_list.GetFirstItem()
+        unk2_deleted_idxs = []  # MY MODIF
+        changed_unk2 = False  # MY MODIF
         while bone.IsOk():
             if bone in selected:
                 self.bone_list.DeleteItem(bone)
+
+                # MY MODIF
+                # unk2 needs to match
+                where_to_delete = bone.index
+                
+                if self.filetype == 'EAN':    
+                    esk = self.root.main['ean'].skeleton
+                else:
+                    esk = self.root.main['esk']
+
+                unk2_list = esk.unk2_list
+                unk2_list = unk2_list[:where_to_delete] + unk2_list[where_to_delete+1:]
+                esk.unk2_list = unk2_list
+                changed_unk2 = True
+                unk2_deleted_idxs += [where_to_delete]
+
+
                 bone = self.bone_list.GetFirstItem()
             else:
                 bone = self.bone_list.GetNextItem(bone)
+        
+        # MY MODIF
+        if changed_unk2:
+            pub.sendMessage("delete_unk2", unk2_deleted_idxs=unk2_deleted_idxs, filetype=self.filetype)
 
         old_len, new_len = self.recalculate_bone_tree()
         if self.filetype == 'EAN':
@@ -387,7 +434,7 @@ class BoneMainPanel(wx.Panel):
 
         # MY MODIF
         if changed_unk2:
-            pub.sendMessage("update_unk2", unk2_added_idxs=unk2_added_idxs, filetype=self.filetype)
+            pub.sendMessage("add_unk2", unk2_added_idxs=unk2_added_idxs, filetype=self.filetype)
 
         self.recalculate_bone_tree()
         self.root.SetStatusText("Pasted {} bones".format(len(copied_bones)))

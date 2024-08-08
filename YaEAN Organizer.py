@@ -56,7 +56,8 @@ class MainWindow(wx.Frame):
         pub.subscribe(self.save_esk, 'save_esk')
         pub.subscribe(self.copy_bone_info, 'copy_bone_info')
 
-        pub.subscribe(self.update_unk2, "update_unk2")  # MY MODIF
+        pub.subscribe(self.add_unk2, "add_unk2")  # MY MODIF
+        pub.subscribe(self.delete_unk2, "delete_unk2")  # MY MODIF
 
         # Events
         self.Bind(wx.EVT_MENU, self.on_exit, menu_exit)
@@ -382,14 +383,27 @@ class MainWindow(wx.Frame):
         pub.sendMessage('toggle_dark_mode', e="light" if self.GetBackgroundColour() == "White" else "dark")
     
     # MY MODIF
-    def update_unk2(self, unk2_added_idxs, filetype):
+    def add_unk2(self, unk2_added_idxs, filetype):
         if filetype == "EAN":
-            self.main['unk2_panel_ean'].update_unk2(unk2_added_idxs)
+            self.main['unk2_panel_ean'].add_unk2(unk2_added_idxs)
 
             self.main['unk2_list_ean'] = self.main['unk2_panel_ean'].I_ctrls
             build_unk2_list(self.main['unk2_list_ean'], self.main['ean'].skeleton)
         else:
-            self.main['unk2_panel_esk'].update_unk2(unk2_added_idxs)
+            self.main['unk2_panel_esk'].add_unk2(unk2_added_idxs)
+            
+            self.main['unk2_list_esk'] = self.main['unk2_panel_esk'].I_ctrls
+            build_unk2_list(self.main['unk2_list_esk'], self.main['esk'])
+    
+    # MY MODIF
+    def delete_unk2(self, unk2_deleted_idxs, filetype):
+        if filetype == "EAN":
+            self.main['unk2_panel_ean'].delete_unk2(unk2_deleted_idxs)
+
+            self.main['unk2_list_ean'] = self.main['unk2_panel_ean'].I_ctrls
+            build_unk2_list(self.main['unk2_list_ean'], self.main['ean'].skeleton)
+        else:
+            self.main['unk2_panel_esk'].delete_unk2(unk2_deleted_idxs)
             
             self.main['unk2_list_esk'] = self.main['unk2_panel_esk'].I_ctrls
             build_unk2_list(self.main['unk2_list_esk'], self.main['esk'])

@@ -40,7 +40,7 @@ class Unk1MainPanel(wx.Panel):
         
         self.I_values = [0] * len(I_BYTE_ORDER)
         self.I_ctrls = []
-        gsizer = wx.FlexGridSizer(2, 10, 0)
+        gsizer = wx.FlexGridSizer(2, 10, 10)
         for idx in range(len(self.I_values)):
             number = f'{I_IDX_TO_NAME[idx]:02}'
             label = f'{I_BYTE_ORDER[idx].upper()}_{number:3}'
@@ -52,7 +52,8 @@ class Unk1MainPanel(wx.Panel):
                 ctrl.Select(0)
                 ctrl.Disable()
             elif I_IDX_TO_NAME[idx] in FLAG_VALS:
-                ctrl = HexCtrl(self.scrolled_panel, wx.ID_OK, size=ctrl_sz, style=wx.TE_PROCESS_ENTER, value="0x0", max=0xFFFF)
+                ctrl = HexCtrl(self.scrolled_panel, wx.ID_OK, size=ctrl_sz, style=wx.TE_PROCESS_ENTER, value="0x0",
+                               max=0xFFFF if I_BYTE_ORDER[idx].lower() == 'h' else 0xFFFFFFFF)
             elif I_BYTE_ORDER[idx].lower() == 'f':
                 ctrl = FloatSpin(self.scrolled_panel, -1, increment=0.01, value=0.0, digits=8, size=ctrl_sz)
             else:
@@ -60,8 +61,8 @@ class Unk1MainPanel(wx.Panel):
             
             self.I_ctrls.append(ctrl)
             
-            gsizer.Add(static_text)
-            gsizer.Add(ctrl)
+            gsizer.Add(static_text, 1, wx.ALIGN_CENTER)
+            gsizer.Add(ctrl, 1, wx.ALIGN_CENTER)
         
         self.scrolled_panel.SetupScrolling()
         self.scrolled_panel.SetSizer(gsizer)

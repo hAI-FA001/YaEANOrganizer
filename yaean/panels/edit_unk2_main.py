@@ -126,14 +126,22 @@ class Unk2MainPanel(wx.Panel):
 
         self.scrolled_panel.Enable()
 
+    def update_unk2(self):
+        self.destroy_unk2()
+        
+        sizer = self.populate_ctrls_in_sizer()
+        self.setup_scroll_panel_with(sizer)
 
-    def update_unk2(self, unk2_added_idxs):
+    def add_unk2(self, unk2_added_idxs):
         unk2_default_vals = [0, 65535]
         
         for where_to_add in unk2_added_idxs:
             self.I_values = self.I_values[:where_to_add] + unk2_default_vals + self.I_values[where_to_add:]
 
-        self.destroy_unk2()
-        
-        sizer = self.populate_ctrls_in_sizer()
-        self.setup_scroll_panel_with(sizer)
+        self.update_unk2()
+    
+    def delete_unk2(self, unk2_deleted_idxs):
+        for where_to_delete in unk2_deleted_idxs:
+            self.I_values = self.I_values[:where_to_delete] + self.I_values[where_to_delete+1:]
+
+        self.update_unk2()
