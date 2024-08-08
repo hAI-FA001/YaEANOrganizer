@@ -237,7 +237,7 @@ class MainWindow(wx.Frame):
             # MY MODIF
             obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
             obj['unk2_list_ean'] = obj['unk2_panel_ean'].I_ctrls
-            build_unk2_list(obj['unk2_list_ean'], obj['ean'].skeleton)
+            build_unk2_list(obj['unk2_list_ean'], obj['ean'].skeleton.unk2_list)
 
             # MY MODIF
             obj['unk1_panel_ean'].name.SetLabel(filename)
@@ -280,7 +280,7 @@ class MainWindow(wx.Frame):
             # MY MODIF
             obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
             obj['unk2_list_esk'] = obj['unk2_panel_esk'].I_ctrls
-            build_unk2_list(obj['unk2_list_esk'], obj['esk'])
+            build_unk2_list(obj['unk2_list_esk'], obj['esk'].unk2_list)
 
             # MY MODIF
             obj['unk1_panel_esk'].name.SetLabel(filename)
@@ -385,28 +385,30 @@ class MainWindow(wx.Frame):
     # MY MODIF
     def add_unk2(self, unk2_added_idxs, filetype):
         if filetype == "EAN":
-            self.main['unk2_panel_ean'].add_unk2(unk2_added_idxs)
-
-            self.main['unk2_list_ean'] = self.main['unk2_panel_ean'].I_ctrls
-            build_unk2_list(self.main['unk2_list_ean'], self.main['ean'].skeleton)
+            unk2_panel = 'unk2_panel_ean'
+            unk2_list = 'unk2_list_ean'
         else:
-            self.main['unk2_panel_esk'].add_unk2(unk2_added_idxs)
-            
-            self.main['unk2_list_esk'] = self.main['unk2_panel_esk'].I_ctrls
-            build_unk2_list(self.main['unk2_list_esk'], self.main['esk'])
+            unk2_panel = 'unk2_panel_esk'
+            unk2_list = 'unk2_list_esk'
+        
+        self.main[unk2_panel].add_unk2(unk2_added_idxs)
+        self.main[unk2_list] = self.main[unk2_panel].I_ctrls
+        unk2_vals = [ctrl.GetValue() for ctrl in self.main[unk2_list]]
+        build_unk2_list(self.main[unk2_list], unk2_vals)
     
     # MY MODIF
     def delete_unk2(self, unk2_deleted_idxs, filetype):
         if filetype == "EAN":
-            self.main['unk2_panel_ean'].delete_unk2(unk2_deleted_idxs)
-
-            self.main['unk2_list_ean'] = self.main['unk2_panel_ean'].I_ctrls
-            build_unk2_list(self.main['unk2_list_ean'], self.main['ean'].skeleton)
+            unk2_panel = 'unk2_panel_ean'
+            unk2_list = 'unk2_list_ean'
         else:
-            self.main['unk2_panel_esk'].delete_unk2(unk2_deleted_idxs)
-            
-            self.main['unk2_list_esk'] = self.main['unk2_panel_esk'].I_ctrls
-            build_unk2_list(self.main['unk2_list_esk'], self.main['esk'])
+            unk2_panel = 'unk2_panel_esk'
+            unk2_list = 'unk2_list_esk'
+        
+        self.main[unk2_panel].delete_unk2(unk2_deleted_idxs)
+        self.main[unk2_list] = self.main[unk2_panel].I_ctrls
+        unk2_vals = [ctrl.GetValue() for ctrl in self.main[unk2_list]]
+        build_unk2_list(self.main[unk2_list], unk2_vals)
 
 
 if __name__ == '__main__':

@@ -40,7 +40,7 @@ class Unk1MainPanel(wx.Panel):
         
         self.I_values = [0] * len(I_BYTE_ORDER)
         self.I_ctrls = []
-        gsizer = wx.FlexGridSizer(2, 10, 10)
+        gsizer = wx.FlexGridSizer(3, 10, 10)
         for idx in range(len(self.I_values)):
             label = I_UNK_NAMES[idx]
 
@@ -64,10 +64,12 @@ class Unk1MainPanel(wx.Panel):
             
             self.I_ctrls.append(ctrl)
 
-            gsizer.Add(static_text, 1, wx.ALIGN_LEFT)
+            gsizer.AddSpacer(10)
+            gsizer.Add(static_text, 1, wx.ALIGN_RIGHT)
             gsizer.Add(ctrl, 1, wx.ALIGN_CENTER)
             
             if (idx - 0) % 8 == 0:
+                gsizer.AddSpacer(10)
                 gsizer.AddSpacer(10)
                 gsizer.AddSpacer(10)
         

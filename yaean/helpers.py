@@ -68,9 +68,9 @@ def build_unk1_list(unk_list, esk):
             unk_list[idx].SetValue(str(esk.unk1_list[idx]))
 
 # MY MODIF
-def build_unk2_list(unk_list, esk):
+def build_unk2_list(unk_list, unk2_list):
     for idx in range(len(unk_list)):
-        unk_list[idx].SetValue(str(esk.unk2_list[idx]))
+        unk_list[idx].SetValue(str(unk2_list[idx]))
 
 def get_bone_tree(bone, esk):
     bone_list = [bone]

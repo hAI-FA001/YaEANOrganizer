@@ -101,7 +101,9 @@ class Unk2MainPanel(wx.Panel):
             
             static_text = wx.StaticText(self.scrolled_panel, label=label)
             ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, 'I')
-            
+
+            ctrl.SetValue(str(self.I_values[idx]))
+
             self.I_ctrls.append(ctrl)
             
             hsizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -112,7 +114,7 @@ class Unk2MainPanel(wx.Panel):
             sizer.Add(hsizer)
             if idx != len(self.I_values)-1:
                 sizer.AddSpacer(self.spacing)
-            
+                    
         return sizer
 
     def setup_scroll_panel_with(self, sizer):
@@ -135,13 +137,22 @@ class Unk2MainPanel(wx.Panel):
     def add_unk2(self, unk2_added_idxs):
         unk2_default_vals = [0, 65535]
         
-        for where_to_add in unk2_added_idxs:
+        self.I_values = [ctrl.GetValue() for ctrl in self.I_ctrls]
+        for where_to_add in sorted(unk2_added_idxs):
             self.I_values = self.I_values[:where_to_add] + unk2_default_vals + self.I_values[where_to_add:]
 
         self.update_unk2()
     
     def delete_unk2(self, unk2_deleted_idxs):
-        for where_to_delete in unk2_deleted_idxs:
-            self.I_values = self.I_values[:where_to_delete] + self.I_values[where_to_delete+1:]
+        new_I_values = []
+        cur_idx = 0
+        while 2 * cur_idx < len(self.I_ctrls):
+            if cur_idx not in unk2_deleted_idxs:
+                new_I_values.append(self.I_ctrls[2 * cur_idx].GetValue())
+                new_I_values.append(self.I_ctrls[2 * cur_idx + 1].GetValue())
+            cur_idx += 1
+
+        self.I_values = new_I_values
 
         self.update_unk2()
+
