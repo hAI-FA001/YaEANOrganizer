@@ -64,6 +64,8 @@ class Unk1MainPanel(wx.Panel):
 
 
     def setup_unk(self, esk):
+        self.scrolled_panel.DestroyChildren()
+        
         self.I_00 = 0
         self.unk1_sections = [UNK1Section(*([0] * len(UNK1_SECTION_BYTE_ORDER))) for _ in range(esk.num_unknown_sections)]
 
@@ -78,18 +80,18 @@ class Unk1MainPanel(wx.Panel):
             static_text = wx.StaticText(self.scrolled_panel, label=label)
             
             if 'bone' in label.lower():
-                ctrl = wx.Choice(self.scrolled_panel, -1, choices=['(No File Loaded)'], size=ctrl_sz)
-                
-                bones = [b.name + f" ({idx})" for idx, b in enumerate(esk.bones)]
-                ctrl.AppendItems(bones)
+                ctrl = wx.Choice(self.scrolled_panel, -1, choices=[b.name + f" ({idx})" for idx, b in enumerate(esk.bones)], size=ctrl_sz)
                 ctrl.Select(int(all_unk_vals[idx]))
+
             elif 'flag' in label.lower():
                 ctrl = HexCtrl(self.scrolled_panel, wx.ID_OK, size=ctrl_sz, style=wx.TE_PROCESS_ENTER, value="0x0",
                                max=0xFFFF if byte_order.lower() == 'h' else 0xFFFFFFFF)
                 ctrl.SetValue(int(all_unk_vals[idx]))
+
             elif byte_order.lower() == 'f':
                 ctrl = FloatSpin(self.scrolled_panel, -1, increment=0.01, value=0.0, digits=8, size=ctrl_sz)
                 ctrl.SetValue(all_unk_vals[idx])
+
             else:
                 ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, byte_order)
                 ctrl.SetValue(str(all_unk_vals[idx]))
