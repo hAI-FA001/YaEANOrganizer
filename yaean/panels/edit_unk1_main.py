@@ -7,12 +7,10 @@ from wx.lib.agw.floatspin import FloatSpin
 import numpy as np
 
 from pyxenoverse.gui.file_drop_target import FileDropTarget
-from pyxenoverse.gui.ctrl.unknown_hex_ctrl import UnknownHexCtrl
 from pyxenoverse.gui.ctrl.hex_ctrl import HexCtrl
-from pyxenoverse.gui import add_entry
 from yaean.helpers import convert_to_px
 
-from pyxenoverse.esk import UNK1_I_00_NAME, UNK1_SECTION_NAMES, UNK1Section, UNK1_SECTION_SIZE, UNK1_SECTION_BYTE_ORDER
+from pyxenoverse.esk import UNK1_I_00_NAME, UNK1_SECTION_NAMES, UNK1Section, UNK1_SECTION_BYTE_ORDER, UNK1_SECTION_SIZE
 
 
 class Unk1MainPanel(wx.Panel):
@@ -65,6 +63,7 @@ class Unk1MainPanel(wx.Panel):
 
     def setup_unk(self, esk):
         self.scrolled_panel.DestroyChildren()
+        self.unk_ctrls = []
         
         self.I_00 = 0
         self.unk1_sections = [UNK1Section(*([0] * len(UNK1_SECTION_BYTE_ORDER))) for _ in range(esk.num_unknown_sections)]
@@ -79,7 +78,29 @@ class Unk1MainPanel(wx.Panel):
             byte_order = overall_byte_order[idx]
             static_text = wx.StaticText(self.scrolled_panel, label=label)
             
-            if 'bone' in label.lower():
+            if idx == 0:
+                def on_num_sections_change(evt: wx._core.SpinEvent):
+                    prev_num_sections = esk.num_unknown_sections
+                    cur_num_sections = int(evt.GetPosition())
+                    diff = cur_num_sections - prev_num_sections
+                    with wx.MessageDialog(self, f"This will change the number of Bone Control sections from {prev_num_sections} to {cur_num_sections}.\nProceed?",
+                                "Change Bone Control Sections", wx.YES | wx.NO) as dlg:
+                        if dlg.ShowModal() == wx.ID_YES:
+                            esk.num_unknown_bytes += (diff * UNK1_SECTION_SIZE)
+                            esk.num_unknown_sections = cur_num_sections
+                            esk.unk1_I_00 = cur_num_sections
+                            if diff > 0:
+                                for _ in range(diff):
+                                    esk.unk1_sections.append(UNK1Section(*([0]*len(UNK1_SECTION_BYTE_ORDER))))
+                            else:
+                                esk.unk1_sections = esk.unk1_sections[:cur_num_sections]
+                            
+                            self.setup_unk(esk)
+
+                ctrl = wx.SpinCtrl(self.scrolled_panel, -1, str(all_unk_vals[idx]), size=ctrl_sz)
+                ctrl.Bind(wx.EVT_SPINCTRL, on_num_sections_change)
+
+            elif 'bone' in label.lower():
                 ctrl = wx.Choice(self.scrolled_panel, -1, choices=[b.name + f" ({idx})" for idx, b in enumerate(esk.bones)], size=ctrl_sz)
                 ctrl.Select(int(all_unk_vals[idx]))
 
@@ -91,7 +112,7 @@ class Unk1MainPanel(wx.Panel):
             elif byte_order.lower() == 'f':
                 ctrl = FloatSpin(self.scrolled_panel, -1, increment=0.01, value=0.0, digits=8, size=ctrl_sz)
                 ctrl.SetValue(all_unk_vals[idx])
-
+            
             else:
                 ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, byte_order)
                 ctrl.SetValue(str(all_unk_vals[idx]))

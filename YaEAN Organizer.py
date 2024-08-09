@@ -151,10 +151,6 @@ class MainWindow(wx.Frame):
             'anim_list': self.anim_main_panel.anim_list,
             'ean_bone_list': self.bone_main_panel.bone_list,
             'esk_bone_list': self.esk_main_panel.bone_list,
-            
-            # MY MODIF
-            'unk1_list_ean': self.unk1_panel_ean.unk_ctrls,
-            'unk1_list_esk': self.unk1_panel_esk.unk_ctrls,
         }
 
         self.side = {
@@ -175,10 +171,6 @@ class MainWindow(wx.Frame):
             'anim_list': self.anim_side_panel.anim_list,
             'ean_bone_list': self.bone_side_panel.bone_list,
             'esk_bone_list': self.esk_side_panel.bone_list,
-            
-            # MY MODIF
-            'unk1_list_ean': self.unk1_panel_side_ean.unk_ctrls,
-            'unk1_list_esk': self.unk1_panel_side_esk.unk_ctrls
         }
 
         self.sizer.Layout()
@@ -344,7 +336,7 @@ class MainWindow(wx.Frame):
             for section in esk_to_edit.unk1_sections: all_unk_vals.extend([*section])
 
             unk1_vals = [ctrl.GetSelection() if 'bone' in names[idx].lower() else ctrl.GetValue()
-                         for idx, ctrl in enumerate(obj[f'unk1_list_{filetype.lower()}'])]
+                         for idx, ctrl in enumerate(obj[f'unk1_panel_{filetype.lower()}'].unk_ctrls)]
             unk1_vals = [float(val) if overall_byte_order[idx].lower() == 'f' else int(val)
                          for idx, val in enumerate(unk1_vals)]
             esk_to_edit.unk1_list = unk1_vals
