@@ -12,7 +12,7 @@ from pyxenoverse.gui.ctrl.hex_ctrl import HexCtrl
 from pyxenoverse.gui import add_entry
 from yaean.helpers import convert_to_px
 
-from pyxenoverse.esk import I_BYTE_ORDER, I_IDX_TO_NAME, THESE_POINT_TO_BONES, FLAG_VALS, I_UNK_NAMES
+from pyxenoverse.esk import UNK1_I_00_NAME, UNK1_SECTION_NAMES, UNK1Section, UNK1_SECTION_SIZE, UNK1_SECTION_BYTE_ORDER
 
 
 class Unk1MainPanel(wx.Panel):
@@ -33,48 +33,9 @@ class Unk1MainPanel(wx.Panel):
         if is_main_panel:
             self.save = wx.Button(self, wx.ID_SAVE, "Save")
         self.scrolled_panel = ScrolledPanel(self)
+        self.unk_ctrls = []
 
-
-        ctrl_sz = (convert_to_px(300, False), convert_to_px(25))
         spacing = convert_to_px(10)
-        
-        self.I_values = [0] * len(I_BYTE_ORDER)
-        self.I_ctrls = []
-        gsizer = wx.FlexGridSizer(3, 10, 10)
-        for idx in range(len(self.I_values)):
-            label = I_UNK_NAMES[idx]
-
-            if label == "unk":
-                number = f'{I_IDX_TO_NAME[idx]:02}'
-                label = f'{I_BYTE_ORDER[idx].upper()}_{number:3}'
-
-            static_text = wx.StaticText(self.scrolled_panel, label=label)
-            
-            if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES:
-                ctrl = wx.Choice(self.scrolled_panel, -1, choices=['(No File Loaded)'], size=ctrl_sz)
-                ctrl.Select(0)
-                ctrl.Disable()
-            elif I_IDX_TO_NAME[idx] in FLAG_VALS:
-                ctrl = HexCtrl(self.scrolled_panel, wx.ID_OK, size=ctrl_sz, style=wx.TE_PROCESS_ENTER, value="0x0",
-                               max=0xFFFF if I_BYTE_ORDER[idx].lower() == 'h' else 0xFFFFFFFF)
-            elif I_BYTE_ORDER[idx].lower() == 'f':
-                ctrl = FloatSpin(self.scrolled_panel, -1, increment=0.01, value=0.0, digits=8, size=ctrl_sz)
-            else:
-                ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, I_BYTE_ORDER[idx])
-            
-            self.I_ctrls.append(ctrl)
-
-            gsizer.AddSpacer(10)
-            gsizer.Add(static_text, 1, wx.ALIGN_RIGHT)
-            gsizer.Add(ctrl, 1, wx.ALIGN_CENTER)
-            
-            if (idx - 0) % 8 == 0:
-                gsizer.AddSpacer(10)
-                gsizer.AddSpacer(10)
-                gsizer.AddSpacer(10)
-        
-        self.scrolled_panel.SetupScrolling()
-        self.scrolled_panel.SetSizer(gsizer)
         
         btns_sizer = wx.BoxSizer(wx.HORIZONTAL)
         btns_sizer.Add(self.open)
@@ -98,7 +59,54 @@ class Unk1MainPanel(wx.Panel):
             self.SetDropTarget(FileDropTarget(self, "load_main_file"))
         else:
             self.SetDropTarget(FileDropTarget(self, "load_side_file"))
+        
+        self.scrolled_panel.Disable()
 
+
+    def setup_unk(self, esk):
+        self.I_00 = 0
+        self.unk1_sections = [UNK1Section(*([0] * len(UNK1_SECTION_BYTE_ORDER))) for _ in range(esk.num_unknown_sections)]
+
+        overall_byte_order = 'I' + UNK1_SECTION_BYTE_ORDER * esk.num_unknown_sections
+        all_unk_vals = [esk.unk1_I_00] 
+        for section in esk.unk1_sections: all_unk_vals.extend([*section])
+
+        ctrl_sz = (convert_to_px(300, False), convert_to_px(25))
+        gsizer = wx.FlexGridSizer(3, 10, 10)
+        for idx, label in enumerate([UNK1_I_00_NAME] + UNK1_SECTION_NAMES * esk.num_unknown_sections):
+            byte_order = overall_byte_order[idx]
+            static_text = wx.StaticText(self.scrolled_panel, label=label)
+            
+            if 'bone' in label.lower():
+                ctrl = wx.Choice(self.scrolled_panel, -1, choices=['(No File Loaded)'], size=ctrl_sz)
+                
+                bones = [b.name + f" ({idx})" for idx, b in enumerate(esk.bones)]
+                ctrl.AppendItems(bones)
+                ctrl.Select(int(all_unk_vals[idx]))
+            elif 'flag' in label.lower():
+                ctrl = HexCtrl(self.scrolled_panel, wx.ID_OK, size=ctrl_sz, style=wx.TE_PROCESS_ENTER, value="0x0",
+                               max=0xFFFF if byte_order.lower() == 'h' else 0xFFFFFFFF)
+                ctrl.SetValue(int(all_unk_vals[idx]))
+            elif byte_order.lower() == 'f':
+                ctrl = FloatSpin(self.scrolled_panel, -1, increment=0.01, value=0.0, digits=8, size=ctrl_sz)
+                ctrl.SetValue(all_unk_vals[idx])
+            else:
+                ctrl = self.make_uint_ctrl(self.scrolled_panel, ctrl_sz, byte_order)
+                ctrl.SetValue(str(all_unk_vals[idx]))
+            
+            self.unk_ctrls.append(ctrl)
+
+            gsizer.AddSpacer(10)
+            gsizer.Add(static_text, 1, wx.ALIGN_RIGHT)
+            gsizer.Add(ctrl, 1, wx.ALIGN_CENTER)
+            
+            if (idx - 0) % 8 == 0:
+                gsizer.AddSpacer(10)
+                gsizer.AddSpacer(10)
+                gsizer.AddSpacer(10)
+
+        self.scrolled_panel.SetupScrolling()
+        self.scrolled_panel.SetSizer(gsizer)
 
 
     def make_uint_ctrl(self, parent, ctrl_sz, byte_order):

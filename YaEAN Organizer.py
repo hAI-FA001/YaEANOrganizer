@@ -8,7 +8,7 @@ import wx
 from wx.lib.dialogs import MultiMessageDialog
 
 from pyxenoverse.ean import EAN
-from pyxenoverse.esk import ESK, I_BYTE_ORDER, I_IDX_TO_NAME, THESE_POINT_TO_BONES
+from pyxenoverse.esk import ESK, UNK1_SECTION_BYTE_ORDER, UNK1_I_00_NAME, UNK1_SECTION_NAMES, UNK1Section, UNK1_SECTION_SIZE
 from pyxenoverse.gui import create_backup
 from yaean.panels.anim_main import AnimMainPanel
 from yaean.panels.anim_side import AnimSidePanel
@@ -16,7 +16,7 @@ from yaean.panels.bone_main import BoneMainPanel
 from yaean.panels.bone_side import BoneSidePanel
 from yaean.panels.edit_unk1_main import Unk1MainPanel
 from yaean.panels.edit_unk2_main import Unk2MainPanel
-from yaean.helpers import build_anim_list, build_bone_tree, build_unk1_list, build_unk2_list, convert_to_px
+from yaean.helpers import build_anim_list, build_bone_tree, build_unk2_list, convert_to_px
 
 import yaean.darkmode as darkmode
 
@@ -153,8 +153,8 @@ class MainWindow(wx.Frame):
             'esk_bone_list': self.esk_main_panel.bone_list,
             
             # MY MODIF
-            'unk1_list_ean': self.unk1_panel_ean.I_ctrls,
-            'unk1_list_esk': self.unk1_panel_esk.I_ctrls,
+            'unk1_list_ean': self.unk1_panel_ean.unk_ctrls,
+            'unk1_list_esk': self.unk1_panel_esk.unk_ctrls,
         }
 
         self.side = {
@@ -177,8 +177,8 @@ class MainWindow(wx.Frame):
             'esk_bone_list': self.esk_side_panel.bone_list,
             
             # MY MODIF
-            'unk1_list_ean': self.unk1_panel_side_ean.I_ctrls,
-            'unk1_list_esk': self.unk1_panel_side_esk.I_ctrls
+            'unk1_list_ean': self.unk1_panel_side_ean.unk_ctrls,
+            'unk1_list_esk': self.unk1_panel_side_esk.unk_ctrls
         }
 
         self.sizer.Layout()
@@ -227,12 +227,15 @@ class MainWindow(wx.Frame):
                                       + "\nDo you want to add Unk1?",
                                 "Add Unk1", wx.YES | wx.NO) as dlg:
                     if dlg.ShowModal() == wx.ID_YES:
-                        new_ean.skeleton.unk1_list = [0] * len(I_BYTE_ORDER)
                         do_build_unk1 = True
                         new_ean.skeleton.m_have_128_unknown_bytes = True
+                        new_ean.skeleton.num_unknown_bytes = 4 + UNK1_SECTION_SIZE
+                        new_ean.skeleton.num_unknown_sections = 1
+                        new_ean.skeleton.unk1_I_00 = 1
+                        new_ean.skeleton.unk1_sections = [UNK1Section(*([0]*len(UNK1_SECTION_BYTE_ORDER)))]
             if do_build_unk1:
                 obj['unk1_panel_ean'].scrolled_panel.Enable()
-                build_unk1_list(obj['unk1_list_ean'], obj['ean'].skeleton)
+                obj['unk1_panel_ean'].setup_unk(new_ean.skeleton)
 
             # MY MODIF
             obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
@@ -270,12 +273,15 @@ class MainWindow(wx.Frame):
                                       + "\nDo you want to add Unk1?",
                                 "Add Unk1", wx.YES | wx.NO) as dlg:
                     if dlg.ShowModal() == wx.ID_YES:
-                        new_esk.unk1_list = [0] * len(I_BYTE_ORDER)
                         do_build_unk1 = True
                         new_esk.m_have_128_unknown_bytes = True
+                        new_esk.num_unknown_bytes = 4 + UNK1_SECTION_SIZE
+                        new_esk.num_unknown_sections = 1
+                        new_esk.unk1_I_00 = 1
+                        new_esk.unk1_sections = [UNK1Section(*([0]*len(UNK1_SECTION_BYTE_ORDER)))]
             if do_build_unk1:
                 obj['unk1_panel_esk'].scrolled_panel.Enable()
-                build_unk1_list(obj['unk1_list_esk'], obj['esk'])
+                obj['unk1_panel_esk'].setup_unk(new_esk)
 
             # MY MODIF
             obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
@@ -332,9 +338,14 @@ class MainWindow(wx.Frame):
         # update Unk values here
         esk_to_edit = obj['ean'].skeleton if filetype.lower() == 'ean' else obj['esk']
         if esk_to_edit.m_have_128_unknown_bytes:
-            unk1_vals = [ctrl.GetSelection() if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES else ctrl.GetValue()
+            overall_byte_order = 'I' + UNK1_SECTION_BYTE_ORDER * esk_to_edit.num_unknown_sections
+            names = [UNK1_I_00_NAME] + UNK1_SECTION_NAMES * esk_to_edit.num_unknown_sections
+            all_unk_vals = [esk_to_edit.unk1_I_00] 
+            for section in esk_to_edit.unk1_sections: all_unk_vals.extend([*section])
+
+            unk1_vals = [ctrl.GetSelection() if 'bone' in names[idx].lower() else ctrl.GetValue()
                          for idx, ctrl in enumerate(obj[f'unk1_list_{filetype.lower()}'])]
-            unk1_vals = [float(val) if I_BYTE_ORDER[idx].lower() == 'f' else int(val)
+            unk1_vals = [float(val) if overall_byte_order[idx].lower() == 'f' else int(val)
                          for idx, val in enumerate(unk1_vals)]
             esk_to_edit.unk1_list = unk1_vals
             

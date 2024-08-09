@@ -48,26 +48,6 @@ def build_bone_tree(bone_list_ctrl, esk):
     bone_list_ctrl.CheckItemRecursively(bone_list_ctrl.GetRootItem(), wx.CHK_CHECKED)
 
 # MY MODIF
-def build_unk1_list(unk_list, esk):
-    from pyxenoverse.esk import I_IDX_TO_NAME, I_BYTE_ORDER, THESE_POINT_TO_BONES, FLAG_VALS
-    for idx in range(len(unk_list)):
-        if I_IDX_TO_NAME[idx] in THESE_POINT_TO_BONES:
-            unk_list[idx].Clear()
-
-            # bones = [b.name for idx, b in enumerate(esk.bones)]
-            bones = [b.name + f" ({idx})" for idx, b in enumerate(esk.bones)]
-            unk_list[idx].AppendItems(bones)
-            
-            unk_list[idx].Select(int(esk.unk1_list[idx]))
-            unk_list[idx].Enable()
-        elif I_BYTE_ORDER[idx].lower() == 'f':
-            unk_list[idx].SetValue(esk.unk1_list[idx])
-        elif I_IDX_TO_NAME[idx] in FLAG_VALS:
-            unk_list[idx].SetValue(int(esk.unk1_list[idx]))
-        else:
-            unk_list[idx].SetValue(str(esk.unk1_list[idx]))
-
-# MY MODIF
 def build_unk2_list(unk_list, unk2_list):
     for idx in range(len(unk_list)):
         unk_list[idx].SetValue(str(unk2_list[idx]))
