@@ -16,6 +16,8 @@ class BoneInfoDialog(wx.Dialog):
         self.copied_bone_info = parent.copied_bone_info
         self.read_only = read_only
 
+        self.ok_evts = []
+
         if read_only:
             style = FS_LEFT | FS_READONLY
         else:
@@ -132,6 +134,7 @@ class BoneInfoDialog(wx.Dialog):
             self.bone.skinning_matrix[2][0] = self.scale_x.GetValue()
             self.bone.skinning_matrix[2][1] = self.scale_y.GetValue()
             self.bone.skinning_matrix[2][2] = self.scale_z.GetValue()
+            [ok_evt(e) for ok_evt in self.ok_evts]
         e.Skip()
 
     def on_copy(self, e):
@@ -159,3 +162,6 @@ class BoneInfoDialog(wx.Dialog):
         self.scale_x.SetValue(scale[0])
         self.scale_y.SetValue(scale[1])
         self.scale_z.SetValue(scale[2])
+
+    def register_ok_evt(self, ok_evt):
+        self.ok_evts = self.ok_evts + [ok_evt]

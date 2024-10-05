@@ -421,6 +421,11 @@ class BoneMainPanel(wx.Panel):
         # to be able to display multiple of these
         dlg = BoneInfoDialog(
                 self.root, self.filetype, self.name.GetLabel(), bone, False)
-        if dlg.Show() == wx.ID_OK:
+        # this doesn't work cuz control flows onward
+        # if dlg.Show() == wx.ID_OK:
+        #     self.recalculate_bone_tree()
+        def on_ok_handler(e):
             self.recalculate_bone_tree()
+        dlg.register_ok_evt(on_ok_handler)
+        dlg.Show()
         
