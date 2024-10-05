@@ -230,9 +230,10 @@ class MainWindow(wx.Frame):
                 obj['unk1_panel_ean'].setup_unk(new_ean.skeleton)
 
             # MY MODIF
-            obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
-            obj['unk2_list_ean'] = obj['unk2_panel_ean'].I_ctrls
-            build_unk2_list(obj['unk2_list_ean'], obj['ean'].skeleton.unk2_list)
+            if new_ean.skeleton.m_have_unk2:
+                obj['unk2_panel_ean'].setup_ctrls(new_ean.skeleton.bone_count)
+                obj['unk2_list_ean'] = obj['unk2_panel_ean'].I_ctrls
+                build_unk2_list(obj['unk2_list_ean'], obj['ean'].skeleton.unk2_list)
 
             # MY MODIF
             obj['unk1_panel_ean'].name.SetLabel(filename)
@@ -276,9 +277,10 @@ class MainWindow(wx.Frame):
                 obj['unk1_panel_esk'].setup_unk(new_esk)
 
             # MY MODIF
-            obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
-            obj['unk2_list_esk'] = obj['unk2_panel_esk'].I_ctrls
-            build_unk2_list(obj['unk2_list_esk'], obj['esk'].unk2_list)
+            if new_esk.m_have_unk2:
+                obj['unk2_panel_esk'].setup_ctrls(new_esk.bone_count)
+                obj['unk2_list_esk'] = obj['unk2_panel_esk'].I_ctrls
+                build_unk2_list(obj['unk2_list_esk'], obj['esk'].unk2_list)
 
             # MY MODIF
             obj['unk1_panel_esk'].name.SetLabel(filename)
@@ -341,7 +343,8 @@ class MainWindow(wx.Frame):
                          for idx, val in enumerate(unk1_vals)]
             esk_to_edit.unk1_list = unk1_vals
             
-        esk_to_edit.unk2_list = [int(ctrl.GetValue()) for ctrl in obj[f'unk2_list_{filetype.lower()}']]    
+        if esk_to_edit.m_have_unk2:
+            esk_to_edit.unk2_list = [int(ctrl.GetValue()) for ctrl in obj[f'unk2_list_{filetype.lower()}']]    
         esk_to_edit.skeletonId = int(obj[f'{filetype.lower()}_bone_panel'].skeletonIdCtrl.GetValue())
 
         
