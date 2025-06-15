@@ -3,7 +3,7 @@ import wx.dataview
 from pubsub import pub
 
 from yaean.dlg.bone_info import BoneInfoDialog
-from yaean.helpers import CHECK
+from yaean.helpers import CHECK, convert_to_px
 from pyxenoverse.gui.file_drop_target import FileDropTarget
 
 
@@ -23,6 +23,11 @@ class BoneSidePanel(wx.Panel):
         self.load = wx.Button(self, wx.ID_OPEN, "Load")
         self.copy = wx.Button(self, wx.ID_COPY, "Copy")
         self.info = wx.Button(self, wx.ID_INFO, "Info")
+
+        # MY MODIF
+        self.skeletonIdTxt = wx.StaticText(self, -1, 'Skeleton Id')
+        self.skeletonIdCtrl = wx.TextCtrl(self, wx.ID_OK, '(Not loaded)', size=(convert_to_px(175, width=True), convert_to_px(25, width=False)))
+        self.skeletonIdCtrl.Disable()
 
         self.copy.Disable()
         self.info.Disable()
@@ -60,6 +65,12 @@ class BoneSidePanel(wx.Panel):
         self.button_sizer.Add(self.info)
         self.button_sizer.AddSpacer(10)
         self.button_sizer.Add(self.check_box)
+
+        # MY MODIF
+        self.button_sizer.AddSpacer(50)
+        self.button_sizer.Add(self.skeletonIdTxt, 0, wx.ALIGN_CENTER)
+        self.button_sizer.AddSpacer(5)
+        self.button_sizer.Add(self.skeletonIdCtrl)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.name, 0, wx.CENTER)
@@ -125,9 +136,11 @@ class BoneSidePanel(wx.Panel):
                 dlg.ShowModal()
                 return
         bone = self.bone_list.GetItemData(selection[0])
-        with BoneInfoDialog(
-                self.root, self.filetype, self.name.GetLabel(), bone, True) as dlg:
-            dlg.ShowModal()
+        # with BoneInfoDialog(
+        #         self.root, self.filetype, self.name.GetLabel(), bone, True) as dlg:
+        dlg = BoneInfoDialog(
+                self.root, self.filetype, self.name.GetLabel(), bone, False)
+        dlg.Show()
 
     def on_right_click(self, _):
         menu = wx.Menu()

@@ -2,7 +2,7 @@ import wx
 from wx.lib.agw.floatspin import FloatSpin, FS_LEFT, FS_READONLY
 from pubsub import pub
 from pyquaternion import Quaternion
-from yaean.helpers import euler_to_quaternion, quaternion_to_euler
+from yaean.helpers import euler_to_quaternion, quaternion_to_euler, convert_to_px
 
 
 class BoneInfoDialog(wx.Dialog):
@@ -15,6 +15,8 @@ class BoneInfoDialog(wx.Dialog):
         self.bone = bone
         self.copied_bone_info = parent.copied_bone_info
         self.read_only = read_only
+
+        self.ok_evts = []
 
         if read_only:
             style = FS_LEFT | FS_READONLY
@@ -50,18 +52,18 @@ class BoneInfoDialog(wx.Dialog):
         orientation = bone.skinning_matrix[1]
         scale = bone.skinning_matrix[2]
 
-        self.offset_x = FloatSpin(self, -1, value=position[0], digits=8, increment=0.001, size=(150, -1), agwStyle=style)
-        self.offset_y = FloatSpin(self, -1, value=position[1], digits=8, increment=0.001, size=(150, -1), agwStyle=style)
-        self.offset_z = FloatSpin(self, -1, value=position[2], digits=8, increment=0.001, size=(150, -1), agwStyle=style)
+        self.offset_x = FloatSpin(self, -1, value=position[0], digits=8, increment=0.001, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.offset_y = FloatSpin(self, -1, value=position[1], digits=8, increment=0.001, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.offset_z = FloatSpin(self, -1, value=position[2], digits=8, increment=0.001, size=(convert_to_px(150, False), -1), agwStyle=style)
 
         rot_x, rot_y, rot_z = quaternion_to_euler(Quaternion(orientation[3], orientation[0], orientation[1], orientation[2]))
-        self.rotation_x = FloatSpin(self, -1, value=rot_x, digits=8, increment=1.0, size=(150, -1), agwStyle=style)
-        self.rotation_y = FloatSpin(self, -1, value=rot_y, digits=8, increment=1.0, size=(150, -1), agwStyle=style)
-        self.rotation_z = FloatSpin(self, -1, value=rot_z, digits=8, increment=1.0, size=(150, -1), agwStyle=style)
+        self.rotation_x = FloatSpin(self, -1, value=rot_x, digits=8, increment=1.0, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.rotation_y = FloatSpin(self, -1, value=rot_y, digits=8, increment=1.0, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.rotation_z = FloatSpin(self, -1, value=rot_z, digits=8, increment=1.0, size=(convert_to_px(150, False), -1), agwStyle=style)
 
-        self.scale_x = FloatSpin(self, -1, value=scale[0], digits=8, increment=0.01, size=(150, -1), agwStyle=style)
-        self.scale_y = FloatSpin(self, -1, value=scale[1], digits=8, increment=0.01, size=(150, -1), agwStyle=style)
-        self.scale_z = FloatSpin(self, -1, value=scale[2], digits=8, increment=0.01, size=(150, -1), agwStyle=style)
+        self.scale_x = FloatSpin(self, -1, value=scale[0], digits=8, increment=0.01, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.scale_y = FloatSpin(self, -1, value=scale[1], digits=8, increment=0.01, size=(convert_to_px(150, False), -1), agwStyle=style)
+        self.scale_z = FloatSpin(self, -1, value=scale[2], digits=8, increment=0.01, size=(convert_to_px(150, False), -1), agwStyle=style)
 
         position_sizer = wx.StaticBoxSizer(wx.HORIZONTAL, self, 'Position')
         position_grid_sizer = wx.FlexGridSizer(rows=3, cols=2, hgap=5, vgap=20)
@@ -132,6 +134,7 @@ class BoneInfoDialog(wx.Dialog):
             self.bone.skinning_matrix[2][0] = self.scale_x.GetValue()
             self.bone.skinning_matrix[2][1] = self.scale_y.GetValue()
             self.bone.skinning_matrix[2][2] = self.scale_z.GetValue()
+            [ok_evt(e) for ok_evt in self.ok_evts]
         e.Skip()
 
     def on_copy(self, e):
@@ -159,3 +162,6 @@ class BoneInfoDialog(wx.Dialog):
         self.scale_x.SetValue(scale[0])
         self.scale_y.SetValue(scale[1])
         self.scale_z.SetValue(scale[2])
+
+    def register_ok_evt(self, ok_evt):
+        self.ok_evts = self.ok_evts + [ok_evt]

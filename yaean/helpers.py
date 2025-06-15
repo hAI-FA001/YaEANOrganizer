@@ -47,6 +47,10 @@ def build_bone_tree(bone_list_ctrl, esk):
         item = bone_list_ctrl.GetNextItem(item)
     bone_list_ctrl.CheckItemRecursively(bone_list_ctrl.GetRootItem(), wx.CHK_CHECKED)
 
+# MY MODIF
+def build_unk2_list(unk_list, unk2_list):
+    for idx in range(len(unk_list)):
+        unk_list[idx].SetValue(str(unk2_list[idx]))
 
 def get_bone_tree(bone, esk):
     bone_list = [bone]
@@ -157,3 +161,8 @@ def quaternion_to_euler(q):
         z = np.degrees(np.arctan2(t3, t4))
 
         return x, y, z
+
+# MY MODIF
+def convert_to_px(dip, width=True):
+    dc = wx.ScreenDC()
+    return int(dip * (dc.GetPPI().width if width else dc.GetPPI().height) / 96.0)
