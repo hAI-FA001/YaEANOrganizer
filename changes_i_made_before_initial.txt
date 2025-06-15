@@ -1,0 +1,28 @@
+add yaean.darkmode
+
+add yaean.helpers.build_unk1_list
+add yaean.helpers.build_unk2_list
+add yaean.helpers.convert_to_px and use it throughout (wherever we specify the size of widgets)
+
+add yaean.panels.edit_unk1_main.py
+add yaean.panels.edit_unk2_main.py
+
+slightly modify on_mirror_anim logic in anim_main.py
+add skeleton id ctrl in bone_main and bone_side
+update unk2 in bone_main.on_paste
+
+In YaEAN Organizer.py:
+    init:
+        pub.subscribe(self.update_unk2, "update_unk2")
+        initialize and add unk1/unk2 main and side panels to ean/esk maind and side notebooks
+        add dark mode toggle button
+        add unk1/unk2 related objects in self.main and self.side
+    
+    load_file:
+        load unk1 and unk2, populating the panels
+    
+    save_file:
+        update unk1 and unk2 in the esk before saving
+    
+    added on_toggle_dark
+    added update_unk2

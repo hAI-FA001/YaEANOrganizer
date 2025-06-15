@@ -7,7 +7,7 @@ from wx.lib.dialogs import MultiMessageDialog
 from pubsub import pub
 
 from pyxenoverse.esk.bone import Bone
-from yaean.helpers import FILTERS, enable_selected, get_unique_name, rename, get_bone_tree
+from yaean.helpers import FILTERS, enable_selected, get_unique_name, rename, get_bone_tree, convert_to_px
 from yaean.dlg.add_bones import AddMissingBonesDialog
 from yaean.dlg.bone_info import BoneInfoDialog
 from pyxenoverse.gui.file_drop_target import FileDropTarget
@@ -38,6 +38,11 @@ class BoneMainPanel(wx.Panel):
         self.info.SetToolTip(wx.ToolTip("Get current pyxenoverse info"))
         self.info.Disable()
 
+        # MY MODIF
+        self.skeletonIdTxt = wx.StaticText(self, -1, 'Skeleton Id')
+        self.skeletonIdCtrl = wx.TextCtrl(self, wx.ID_OK, '(Not loaded)', size=(convert_to_px(175, width=True), convert_to_px(25, width=False)))
+        self.skeletonIdCtrl.Disable()
+        
         self.bone_list = wx.dataview.TreeListCtrl(self, style=style)
         self.bone_list.AppendColumn("Bone")
         self.bone_list.Bind(wx.dataview.EVT_TREELIST_ITEM_CHECKED, self.on_checked)
@@ -77,6 +82,12 @@ class BoneMainPanel(wx.Panel):
         self.button_sizer.Add(self.edit)
         self.button_sizer.AddSpacer(5)
         self.button_sizer.Add(self.info)
+        
+        # MY MODIF
+        self.button_sizer.AddSpacer(50)
+        self.button_sizer.Add(self.skeletonIdTxt, 0, wx.ALIGN_CENTER)
+        self.button_sizer.AddSpacer(5)
+        self.button_sizer.Add(self.skeletonIdCtrl)
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.name, 0, wx.CENTER)
@@ -120,8 +131,10 @@ class BoneMainPanel(wx.Panel):
         # Set index first
         index = 0
 
+        prev_indices = set()  # MY MODIF
         while item.IsOk():
             bone = self.bone_list.GetItemData(item)
+            prev_indices.add(bone.index)  # MY MODIF
             bone.index = index
             self.bone_list.SetItemText(item, "{}: {}".format(bone.index, bone.name))
             item = self.bone_list.GetNextItem(item)
@@ -144,6 +157,24 @@ class BoneMainPanel(wx.Panel):
             bones.append(bone)
 
             item = self.bone_list.GetNextItem(item)
+        
+        # MY MODIF
+        updated_bones = bones
+        prev_bones = self.root.main[self.filetype.lower()]
+        if self.filetype.lower() == 'ean': prev_bones = prev_bones.skeleton.bones
+        else: prev_bones = prev_bones.bones
+
+        prev_names = {b.name for b in prev_bones}
+        
+        bones_removed = [b.index for b in prev_bones if b.index not in prev_indices]
+        bones_added = [b.index for b in updated_bones if b.name not in prev_names]
+
+        # pray u can only either add bone or remove bone at one time
+        if len(bones_added) > 0:
+            pub.sendMessage("add_unk2", unk2_added_idxs=bones_added, filetype=self.filetype)
+        elif len(bones_removed) > 0:
+            pub.sendMessage("delete_unk2", unk2_deleted_idxs=bones_removed, filetype=self.filetype)
+
 
         if self.filetype == 'EAN':
             old_length = len(self.root.main['ean'].skeleton.bones)
@@ -301,10 +332,11 @@ class BoneMainPanel(wx.Panel):
         while bone.IsOk():
             if bone in selected:
                 self.bone_list.DeleteItem(bone)
+        
                 bone = self.bone_list.GetFirstItem()
             else:
                 bone = self.bone_list.GetNextItem(bone)
-
+        
         old_len, new_len = self.recalculate_bone_tree()
         if self.filetype == 'EAN':
             self.root.main['ean'].clean_animations()
@@ -349,10 +381,14 @@ class BoneMainPanel(wx.Panel):
                     item = self.bone_list.AppendItem(temp_bone_list[new_bone.parent_index], '', data=new_bone)
                 else:
                     item = self.bone_list.AppendItem(root, '', data=new_bone)
+
+        
             self.bone_list.Select(item)
             self.bone_list.Expand(item)
             self.bone_list.CheckItem(item)
             temp_bone_list[new_bone.index] = item
+
+        
         self.recalculate_bone_tree()
         self.root.SetStatusText("Pasted {} bones".format(len(copied_bones)))
 
@@ -379,7 +415,16 @@ class BoneMainPanel(wx.Panel):
                 dlg.ShowModal()
                 return
         bone = self.bone_list.GetItemData(selection[0])
-        with BoneInfoDialog(
-                self.root, self.filetype, self.name.GetLabel(), bone, False) as dlg:
-            if dlg.ShowModal() == wx.ID_OK:
-                self.recalculate_bone_tree()
+        # with BoneInfoDialog(
+        #         self.root, self.filetype, self.name.GetLabel(), bone, False) as dlg:
+        # to be able to display multiple of these
+        dlg = BoneInfoDialog(
+                self.root, self.filetype, self.name.GetLabel(), bone, False)
+        # this doesn't work cuz control flows onward
+        # if dlg.Show() == wx.ID_OK:
+        #     self.recalculate_bone_tree()
+        def on_ok_handler(e):
+            self.recalculate_bone_tree()
+        dlg.register_ok_evt(on_ok_handler)
+        dlg.Show()
+        

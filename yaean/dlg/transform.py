@@ -1,6 +1,7 @@
 import wx
 from wx.lib.agw.floatspin import FloatSpin
 from pubsub import pub
+from yaean.helpers import convert_to_px
 
 
 class TransformDialog(wx.Dialog):
@@ -25,15 +26,15 @@ class TransformDialog(wx.Dialog):
             self.bone_list = None
 
         grid_sizer.Add(wx.StaticText(self, -1, f'X {name}'), 0, wx.CENTER)
-        self.ctrl_x = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(150, -1))
+        self.ctrl_x = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(convert_to_px(150, False), -1))
         grid_sizer.Add(self.ctrl_x, 0, wx.ALIGN_RIGHT)
 
         grid_sizer.Add(wx.StaticText(self, -1, f'Y {name}'), 0, wx.CENTER)
-        self.ctrl_y = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(150, -1))
+        self.ctrl_y = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(convert_to_px(150, False), -1))
         grid_sizer.Add(self.ctrl_y, 0, wx.ALIGN_RIGHT)
 
         grid_sizer.Add(wx.StaticText(self, -1, f'Z {name}'), 0, wx.CENTER)
-        self.ctrl_z = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(150, -1))
+        self.ctrl_z = FloatSpin(self, -1, increment=0.01, value=0.0, digits=8, size=(convert_to_px(150, False), -1))
         grid_sizer.Add(self.ctrl_z, 0, wx.ALIGN_RIGHT)
 
         ok_button = wx.Button(self, wx.ID_OK, "Ok")

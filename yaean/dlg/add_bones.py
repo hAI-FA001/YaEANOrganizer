@@ -1,6 +1,6 @@
 import wx
 from wx.dataview import TreeListCtrl, TL_CHECKBOX, TL_MULTIPLE
-
+from yaean.helpers import convert_to_px
 
 class AddMissingBonesDialog(wx.Dialog):
     def __init__(self, parent, missing_bones, *args, **kw):
@@ -9,7 +9,7 @@ class AddMissingBonesDialog(wx.Dialog):
         self.SetTitle("Add Missing Bones")
         self.missing_bones = missing_bones
 
-        self.bone_list = TreeListCtrl(self, size=(-1, 250), style=TL_MULTIPLE | TL_CHECKBOX)
+        self.bone_list = TreeListCtrl(self, size=(-1, convert_to_px(250)), style=TL_MULTIPLE | TL_CHECKBOX)
         self.bone_list.AppendColumn("Bone")
         root = self.bone_list.GetRootItem()
         for bone in missing_bones:
