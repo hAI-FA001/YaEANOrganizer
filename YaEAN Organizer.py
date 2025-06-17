@@ -21,7 +21,7 @@ from yaean.helpers import build_anim_list, build_bone_tree, build_unk2_list, con
 import yaean.darkmode as darkmode
 
 
-VERSION = '0.4.1'
+VERSION = '0.4.5'
 
 
 class MainWindow(wx.Frame):
